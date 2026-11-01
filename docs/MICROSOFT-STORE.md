@@ -6,29 +6,28 @@
 **מה מוגש:** אפליקציית המחשב (`apps/desktop`) כחבילת MSIX, ל-Windows 10 מגרסה 1809 ומעלה ול-Windows 11, ל-x64 ול-arm64.
 **התוכנית:** [phases/22-microsoft-store.md](phases/22-microsoft-store.md).
 
-## 1. ערכי הזהות (פעם אחת)
+## 1. זהות האפליקציה
 
-1. ב-[Partner Center](https://partner.microsoft.com/dashboard/apps-and-games/overview): פותחים את האפליקציה שנשמרה (סוג **MSIX or PWA app**, לא "EXE or MSI").
-2. **Product management** ← **Product identity**. מעתיקים שלושה ערכים:
-   - `Package/Identity/Name` (למשל `12345Rubinny.RubinnyScreen`).
-   - `Package/Identity/Publisher` (מתחיל ב-`CN=`).
-   - `Package/Properties/PublisherDisplayName`.
-3. ב-GitHub: **Settings** ← **Secrets and variables** ← **Actions** ← לשונית **Variables** ← **New repository variable**. מגדירים ארבעה משתנים (Variables ולא Secrets: הערכים ציבוריים בכל חבילה):
+הערכים נלקחו מ-Partner Center ← **Product management** ← **Product identity**, והם שמורים ב-`apps/desktop/package.json` (‏`build.appx`). הם ציבוריים: הם מופיעים בכל חבילה.
 
-| משתנה                          | ערך                                                                        |
-| ------------------------------ | -------------------------------------------------------------------------- |
-| `STORE_IDENTITY_NAME`          | `Package/Identity/Name`                                                    |
-| `STORE_PUBLISHER`              | `Package/Identity/Publisher`                                               |
-| `STORE_PUBLISHER_DISPLAY_NAME` | `Package/Properties/PublisherDisplayName`                                  |
-| `STORE_DISPLAY_NAME`           | שם האפליקציה **בדיוק** כפי שנשמר בחנות (כולל אותיות גדולות וקטנות ורווחים) |
+| ערך                                          | מה זה                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------ |
+| `Rubinny screen`                             | שם האפליקציה בחנות (`displayName`). חייב להיות זהה לשם השמור.            |
+| `DiamondRubinny.Rubinnyscreen`               | `Package/Identity/Name` (`identityName`)                                 |
+| `CN=A2694403-EEEE-4D3F-80BB-589A9E34AEA9`    | `Package/Identity/Publisher` (`publisher`)                               |
+| `Diamond Rubinny`                            | `Package/Properties/PublisherDisplayName`. **לוודא מול Partner Center.** |
+| `9PL1NGDRDRJR`                               | מזהה החנות. דף האפליקציה: https://apps.microsoft.com/detail/9PL1NGDRDRJR |
+| `DiamondRubinny.Rubinnyscreen_1q7b68dwp3rpe` | Package Family Name (נגזר מהשם ומה-Publisher)                            |
+
+אם אחד הערכים משתנה ב-Partner Center, מעדכנים אותו ב-`package.json` (וב-CI את שם החבילה בבדיקה).
 
 ## 2. בניית החבילות
 
-- **בכל שחרור:** תהליך ה-Release בונה גם את חבילות החנות, כל עוד המשתנים מוגדרים, ושומר אותן כ-artifact בשם `microsoft-store` (90 יום):
+- **בכל שחרור:** תהליך ה-Release בונה את חבילות החנות ושומר אותן כ-artifact בשם `microsoft-store` (90 יום):
   - `rubinny-screen-<version>-x64.appx`.
   - `rubinny-screen-<version>-arm64.appx`.
 - **בלי חתימה:** החבילות לא חתומות, כי החנות חותמת עליהן בעצמה. אי אפשר להתקין אותן ישירות. ההתקנה היא רק מהחנות.
-- **בדיקה ב-CI:** בכל commit נבנית חבילת בדיקה עם תעודה זמנית. היא מותקנת על Windows ב-CI, נבדק שהמניפסט כולל הפעלה אוטומטית וגרסה מינימלית, והאפליקציה מופעלת.
+- **בדיקה ב-CI:** בכל commit נבנית החבילה. היא נחתמת בתעודה זמנית לבדיקה, מותקנת על Windows, ונבדקים המניפסט (שם, הפעלה אוטומטית, גרסה מינימלית) והפעלת האפליקציה.
 
 ## 3. הגשה (Submission)
 

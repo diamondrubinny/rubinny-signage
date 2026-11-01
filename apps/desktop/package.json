@@ -48,10 +48,10 @@
     },
     "appx": {
       "applicationId": "RubinnyScreen",
-      "identityName": "Rubinny.RubinnyScreen.Test",
-      "publisher": "CN=Rubinny Test",
-      "publisherDisplayName": "Rubinny",
-      "displayName": "Rubinny Screen",
+      "identityName": "DiamondRubinny.Rubinnyscreen",
+      "publisher": "CN=A2694403-EEEE-4D3F-80BB-589A9E34AEA9",
+      "publisherDisplayName": "Diamond Rubinny",
+      "displayName": "Rubinny screen",
       "backgroundColor": "transparent",
       "languages": [
         "he-IL",

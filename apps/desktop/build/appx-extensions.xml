@@ -2,5 +2,5 @@
         <!-- Starts the player when the user signs in to Windows (Microsoft Store package). The
              executable is the app's own (build.executableName in package.json). -->
         <desktop:Extension Category="windows.startupTask" Executable="app\rubinny-player.exe" EntryPoint="Windows.FullTrustApplication">
-          <desktop:StartupTask TaskId="RubinnyStartup" Enabled="true" DisplayName="Rubinny Screen" />
+          <desktop:StartupTask TaskId="RubinnyStartup" Enabled="true" DisplayName="Rubinny screen" />
         </desktop:Extension>

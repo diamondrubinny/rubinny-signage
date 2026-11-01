@@ -279,28 +279,31 @@ jobs:
         working-directory: apps/desktop
         shell: pwsh
         run: |
-          # A throwaway certificate for this test only: the Store signs the real package itself.
-          # Its subject must equal appx.publisher in package.json.
-          $cert = New-SelfSignedCertificate -Type Custom -Subject 'CN=Rubinny Test' -KeyUsage DigitalSignature `
-            -CertStoreLocation 'Cert:\CurrentUser\My' -TextExtension @('2.5.29.37={text}1.3.6.1.5.5.7.3.3', '2.5.29.19={text}')
-          $password = ConvertTo-SecureString -String 'ci-only' -Force -AsPlainText
-          Export-PfxCertificate -Cert $cert -FilePath "$env:RUNNER_TEMP\appx-test.pfx" -Password $password | Out-Null
-          Export-Certificate -Cert $cert -FilePath "$env:RUNNER_TEMP\appx-test.cer" | Out-Null
-          Import-Certificate -FilePath "$env:RUNNER_TEMP\appx-test.cer" -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
-          $env:CSC_LINK = "$env:RUNNER_TEMP\appx-test.pfx"
-          $env:CSC_KEY_PASSWORD = 'ci-only'
+          # Built unsigned, as for the Store (which signs it). To install it here, it is signed
+          # with a throwaway certificate whose subject is the package's publisher (package.json).
           pnpm exec electron-builder --win appx --x64 --publish never
           if ($LASTEXITCODE -ne 0) { throw 'appx build failed' }
-
           $appx = Get-ChildItem release\rubinny-screen-*-x64.appx | Select-Object -First 1
+
+          $publisher = (Get-Content package.json -Raw | ConvertFrom-Json).build.appx.publisher
+          $cert = New-SelfSignedCertificate -Type Custom -Subject $publisher -KeyUsage DigitalSignature `
+            -CertStoreLocation 'Cert:\CurrentUser\My' -TextExtension @('2.5.29.37={text}1.3.6.1.5.5.7.3.3', '2.5.29.19={text}')
+          Export-Certificate -Cert $cert -FilePath "$env:RUNNER_TEMP\appx-test.cer" | Out-Null
+          Import-Certificate -FilePath "$env:RUNNER_TEMP\appx-test.cer" -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
+          $signtool = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe' |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          & $signtool.FullName sign /fd SHA256 /sha1 $cert.Thumbprint /s My $appx.FullName
+          if ($LASTEXITCODE -ne 0) { throw 'signing the test package failed' }
+
           Add-AppxPackage -Path $appx.FullName
-          $package = Get-AppxPackage -Name 'Rubinny.RubinnyScreen.Test'
+          $package = Get-AppxPackage -Name 'DiamondRubinny.Rubinnyscreen'
           if (-not $package) { throw 'the package did not install' }
           $manifest = Get-AppxPackageManifest $package
           $task = $manifest.Package.Applications.Application.Extensions.Extension.StartupTask
           if ($task.TaskId -ne 'RubinnyStartup') { throw 'no startup task in the manifest' }
           $minVersion = $manifest.Package.Dependencies.TargetDeviceFamily.MinVersion
           if ($minVersion -ne '10.0.17763.0') { throw "unexpected MinVersion $minVersion" }
+          if ($manifest.Package.Properties.DisplayName -ne 'Rubinny screen') { throw 'unexpected display name' }
 
           Start-Process "shell:AppsFolder\$($package.PackageFamilyName)!RubinnyScreen"
           Start-Sleep -Seconds 20
