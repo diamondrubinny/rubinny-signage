@@ -15,7 +15,8 @@
     "start": "pnpm build && electron .",
     "e2e": "pnpm build && playwright test",
     "dist:linux": "pnpm build && electron-builder --linux AppImage deb --publish never",
-    "dist:win": "pnpm build && electron-builder --win nsis --publish never"
+    "dist:win": "pnpm build && electron-builder --win nsis --publish never",
+    "dist:store": "pnpm build && electron-builder --win appx --x64 --arm64 --publish never"
   },
   "build": {
     "appId": "net.rubinny.player",
@@ -44,6 +45,22 @@
     "executableName": "rubinny-player",
     "win": {
       "icon": "build/icon.png"
+    },
+    "appx": {
+      "applicationId": "RubinnyScreen",
+      "identityName": "Rubinny.RubinnyScreen.Test",
+      "publisher": "CN=Rubinny Test",
+      "publisherDisplayName": "Rubinny",
+      "displayName": "Rubinny Screen",
+      "backgroundColor": "transparent",
+      "languages": [
+        "he-IL",
+        "en-US"
+      ],
+      "minVersion": "10.0.17763.0",
+      "maxVersionTested": "10.0.26100.0",
+      "customExtensionsPath": "build/appx-extensions.xml",
+      "artifactName": "rubinny-screen-${version}-${arch}.${ext}"
     }
   },
   "devDependencies": {

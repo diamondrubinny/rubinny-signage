@@ -8,6 +8,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { BrowserWindow, app, ipcMain, powerSaveBlocker, session, type WebContents } from 'electron';
+import { autostartMethod } from './autostart.js';
 import { loadConfig, parseServerUrl, playerUrl, saveConfig } from './config.js';
 import { captureScale, isSameOrigin, isSetupPage } from './security.js';
 
@@ -47,7 +48,9 @@ let origin: string | null = null;
 
 function startAtLogin(): void {
   if (!app.isPackaged) return; // never during development or tests
-  if (process.platform === 'linux') {
+  const method = autostartMethod(process.platform, process.windowsStore);
+  if (method === 'package') return; // the Store package starts the player itself
+  if (method === 'xdg') {
     const dir = join(homedir(), '.config', 'autostart');
     const file = join(dir, 'rubinny-player.desktop');
     mkdirSync(dir, { recursive: true });
