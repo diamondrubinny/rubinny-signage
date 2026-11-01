@@ -15,7 +15,7 @@
 | `Rubinny screen`                             | שם האפליקציה בחנות (`displayName`). חייב להיות זהה לשם השמור.            |
 | `DiamondRubinny.Rubinnyscreen`               | `Package/Identity/Name` (`identityName`)                                 |
 | `CN=A2694403-EEEE-4D3F-80BB-589A9E34AEA9`    | `Package/Identity/Publisher` (`publisher`)                               |
-| `Diamond Rubinny`                            | `Package/Properties/PublisherDisplayName`. **לוודא מול Partner Center.** |
+| `Diamond Rubinny`                            | `Package/Properties/PublisherDisplayName` (אומת מול Partner Center)      |
 | `9PL1NGDRDRJR`                               | מזהה החנות. דף האפליקציה: https://apps.microsoft.com/detail/9PL1NGDRDRJR |
 | `DiamondRubinny.Rubinnyscreen_1q7b68dwp3rpe` | Package Family Name (נגזר מהשם ומה-Publisher)                            |
 

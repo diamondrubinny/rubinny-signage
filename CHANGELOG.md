@@ -6,6 +6,26 @@ All notable changes to Rubinny. The format follows
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-01
+
+The Windows player packaged for the Microsoft Store ("Rubinny screen"), ready for submission. Upgrading from 0.11.0: see
+[docs/UPGRADING.md](docs/UPGRADING.md#0110--0120) (nothing to do).
+
+### Added
+
+- Microsoft Store package of the desktop player (docs/MICROSOFT-STORE.md,
+  docs/phases/22-microsoft-store.md): MSIX for Windows 10 1809 and later and Windows 11, x64
+  and arm64, signed and updated by the Store. It starts when the user signs in (a startup
+  task in the package). Each release builds the packages for submission (artifact
+  `microsoft-store`); CI installs and starts a test package on Windows.
+- A privacy statement for the Store app (docs/MICROSOFT-STORE-PRIVACY.md, a draft for legal
+  review).
+
+### Changed
+
+- The desktop player does not register a login item when it runs from the Store package (the
+  package starts it). The `.exe` installer is unchanged.
+
 ## [0.11.0] - 2026-10-29
 
 Security fixes from an internal security review, and dynamic scans of every API route.
@@ -448,6 +468,7 @@ external penetration tester, accessibility auditor or lawyer: see
 - Not tested yet on physical Raspberry Pi, Android TV or Windows devices.
 - Row-level security in PostgreSQL is planned for 0.2 (see docs/phases/09-release.md).
 
+[0.12.0]: https://github.com/diamondrubinny/freescreensign/releases/tag/v0.12.0
 [0.11.0]: https://github.com/diamondrubinny/freescreensign/releases/tag/v0.11.0
 [0.10.0]: https://github.com/diamondrubinny/freescreensign/releases/tag/v0.10.0
 [0.9.0]: https://github.com/diamondrubinny/freescreensign/releases/tag/v0.9.0
